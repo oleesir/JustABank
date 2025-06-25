@@ -1,4 +1,4 @@
-package com.olisa_td.accountservice.exception.domain;
+package com.olisa_td.transactionservice.exception.domain;
 
 public class NotEnoughPermissionException extends RuntimeException {
 

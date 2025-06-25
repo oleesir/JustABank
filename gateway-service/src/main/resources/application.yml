@@ -3,23 +3,35 @@ server:
 auth:
   service:
     url: ${AUTH_SERVICE}
+logging:
+  level:
+    web: INFO
+    '[com.olisa_td.gatewayservice]': DEBUG
 spring:
   application:
     name: gateway-service
   cloud:
     gateway:
       routes:
-        - id: auth-service-route
+        - id: auth-service
           uri: http://auth-service:4001
           predicates:
-            - Path=/auth/**
+            - Path=/api/v1/auth/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=3
 
-        - id: account-service-route
+        - id: account-service
           uri: http://account-service:4002
           predicates:
-            - Path=/api/accounts/**
+            - Path=/api/v1/account/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=3
+            - JwtAuth
+
+        - id: transaction-service
+          uri: http://transaction-service:4003
+          predicates:
+            - Path=/api/v1/transaction/**
+          filters:
+            - StripPrefix=3
             - JwtAuth

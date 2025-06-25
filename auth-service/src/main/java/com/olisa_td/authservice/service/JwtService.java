@@ -7,39 +7,49 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Value("${jwt.secret}")
     private String jwtSecret;
+
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
+
+    @Value("${jwt.issuer}")
+    private String jwtIssuer;
+
+    @Value("${jwt.audience}")
+    private String jwtAudience;
 
 
     public String generateToken(String id, String role) {
         return Jwts.builder()
                 .setSubject(id)
                 .claim("role", role)
-                .setIssuer("Olisa")
-                .setAudience("justABank")
+                .setIssuer(jwtIssuer)
+                .setAudience(jwtAudience)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1_800_000))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSignInKey())
                 .compact();
     }
 
+
     private Claims extractAllClaims(String token) {
         Claims claims = null;
 
-        try {
-            claims = Jwts.parserBuilder()
-                    .setSigningKey(getSignInKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        }
+        claims = Jwts.parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
 
         return claims;
     }
@@ -52,23 +62,10 @@ public class JwtService {
             String id =  claims.getSubject();
             String role = claims.get("role",String.class);
 
-           return new TokenResponse(id,role);
+            return new TokenResponse(id,role);
 
         }
         return null;
-    }
-
-
-    public void validateToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(getSignInKey())
-                    .build()
-                    .parseClaimsJws(token);
-        } catch (SignatureException e) {
-            throw new JwtException("Invalid JWT signature");
-        } catch (JwtException e) {
-            throw new JwtException("Invalid JWT");
-        }
     }
 
 
@@ -78,3 +75,4 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
+

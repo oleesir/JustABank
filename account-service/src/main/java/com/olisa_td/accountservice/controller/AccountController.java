@@ -1,15 +1,16 @@
 package com.olisa_td.accountservice.controller;
 
+import com.olisa_td.accountservice.dto.AccountRequest;
 import com.olisa_td.accountservice.service.AccountService;
 import com.olisa_td.accountservice.jpa.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/accounts")
 public class AccountController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -18,22 +19,33 @@ public class AccountController {
 
 
     @PostMapping("/new_account")
-    public ResponseEntity<Account> createAccount(@RequestBody Account account){
-        Account savedAccount = this.accountService.createAccount(account);
-        return ResponseEntity.ok(savedAccount );
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+    public ResponseEntity<Account> createAccount(@RequestBody AccountRequest accountRequest){
+        return ResponseEntity.ok(this.accountService.createAccount(accountRequest));
     }
 
-//    @DeleteMapping("/{id}")
-//    public void deleteAccount(@PathVariable String id, @RequestHeader("X-Role") String role){
-//            this.accountService.deleteAccountByNumber(id,role);
-//
-//    }
+
+    @PatchMapping("/{id}/{status}")
+    @PreAuthorize("hasAnyRole('ROLE_STAFF', 'ROLE_ADMIN')")
+    public ResponseEntity<Account> updateAccountStatus(@PathVariable String id, @PathVariable String status){
+        return ResponseEntity.ok(this.accountService.updateAccountStatus(id,status));
+    }
 
 
-//    @PatchMapping("/{id}")
-//    public void ToggleAccount(@PathVariable String id, @RequestHeader("X-Role") String role){
-//        this.accountService.toggleAccount(id,role);
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Account> getAccount(@PathVariable String id){
+        return ResponseEntity.ok(this.accountService.getAccount(id));
+    }
 
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_STAFF', 'ROLE_ADMIN')")
+    public ResponseEntity<String> deleteAccount(@PathVariable String id){
+            this.accountService.deleteAccount(id);
+            return ResponseEntity.ok("Successfully deleted.");
+    }
 
 }
+
+
+

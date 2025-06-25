@@ -1,5 +1,5 @@
 package com.olisa_td.accountservice.jpa;
 
 public enum AccountStatus {
-    OPEN,CLOSED,SUSPENDED
+    OPEN, CLOSED, SUSPENDED;
 }

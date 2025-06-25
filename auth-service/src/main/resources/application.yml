@@ -1,5 +1,14 @@
 jwt:
   secret: ${JWT_SECRET}
+  expiration: 86_400_000 # 24 hours
+#  expiration: 10_000
+  issuer: 'Olisa'
+  audience: justABank
+
+logging:
+  level:
+    web: INFO
+    '[com.olisa_td.authservice]': DEBUG
 
 spring:
   application:

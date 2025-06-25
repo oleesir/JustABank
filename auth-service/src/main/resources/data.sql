@@ -14,10 +14,10 @@ INSERT INTO "users" (id, first_name, last_name, password, email, address, role)
 SELECT '93c1791e-d6c6-4763-9cf3-e3af543ea3b8',
        'Admin',
        'Super',
-       '$2a$12$QbKuXQ8msmn5t6oHNFVQFOUJVCoFd/DZPvZPWE7D6i.YporQyEY8C',
+       '$2y$10$JMYX5K90Fr6Ws/Eh5sQTCekquqXIkZBE9V1yBr7yxX5w88e9EjMxe',
        'admin@example.com',
        '123 Admin Lane',
-       'ADMIN'
+       'ROLE_ADMIN'
     WHERE NOT EXISTS (
     SELECT 1
     FROM "users"

@@ -83,7 +83,6 @@ public class Account {
         this.accountStatus = accountStatus;
     }
 
-
     @Override
     public String toString() {
         return "Account{" +

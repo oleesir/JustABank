@@ -35,9 +35,4 @@ public class UserController {
         return ResponseEntity.ok(this.userService.validateToken(authHeader));
     }
 
-    @GetMapping("/validateOne")
-    public ResponseEntity<Void> validateTokenOne(@RequestHeader("Authorization") String authHeader) {
-        this.userService.validateToken(authHeader);
-        return ResponseEntity.ok().build();
-    }
 }

@@ -1,0 +1,16 @@
+server:
+  port: 4003
+account:
+  service:
+    url: ${ACCOUNT_SERVICE}
+logging:
+  level:
+    web: INFO
+    '[com.olisa_td.transactionservice]': DEBUG
+spring:
+  application:
+    name: transaction-service
+  kafka:
+   producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer

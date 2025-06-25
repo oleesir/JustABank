@@ -5,16 +5,19 @@ import com.olisa_td.authservice.dto.SignupRequest;
 import com.olisa_td.authservice.dto.TokenResponse;
 import com.olisa_td.authservice.exception.domain.EmailExistException;
 import com.olisa_td.authservice.exception.domain.InValidTokenException;
-import com.olisa_td.authservice.exception.domain.UserNotFoundException;
 import com.olisa_td.authservice.jpa.Role;
 import com.olisa_td.authservice.jpa.User;
 import com.olisa_td.authservice.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserRepository userRepository;
@@ -22,7 +25,6 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtService jwtService;
-
 
 
 
@@ -39,7 +41,7 @@ public class UserService {
         user.setEmail(signupRequest.getEmail());
         user.setAddress(signupRequest.getAddress());
         user.setPassword(this.passwordEncoder.encode(signupRequest.getPassword()));
-        user.setRole(Role.USER);
+        user.setRole(Role.ROLE_USER);
 
         this.userRepository.save(user);
 
@@ -52,9 +54,9 @@ public class UserService {
         User user = this.userRepository.findByEmail(loginRequest.getEmail())
                 .filter(u -> passwordEncoder.matches(loginRequest.getPassword(),
                         u.getPassword()))
-                .orElseThrow(() -> new UserNotFoundException("Email or password is incorrect."));
+                .orElseThrow(() -> new BadCredentialsException("Email or password is incorrect."));
 
-        return jwtService.generateToken(user.getId().toString(),user.getRole().name());
+        return this.jwtService.generateToken(user.getId().toString(),user.getRole().name());
     }
 
 
@@ -62,24 +64,12 @@ public class UserService {
     public TokenResponse validateToken(String authHeader){
 
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new InValidTokenException("Token not found.");
+            throw new InValidTokenException("Invalid token.");
         }
 
         String token = authHeader.substring(7);
 
-         return jwtService.getEmailAndRoleFromToken(token);
-
-    }
-
-    public void validateTokenOne(String authHeader){
-
-        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new InValidTokenException("Token not found.");
-        }
-
-        String token = authHeader.substring(7);
-
-         jwtService.validateToken(token);
+         return this.jwtService.getEmailAndRoleFromToken(token);
 
     }
 
