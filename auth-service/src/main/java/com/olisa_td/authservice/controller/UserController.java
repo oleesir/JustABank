@@ -5,6 +5,7 @@ import com.olisa_td.authservice.dto.LoginRequest;
 import com.olisa_td.authservice.dto.LoginResponse;
 import com.olisa_td.authservice.dto.SignupRequest;
 import com.olisa_td.authservice.dto.TokenResponse;
+import com.olisa_td.authservice.jpa.User;
 import com.olisa_td.authservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,12 @@ public class UserController {
     @GetMapping("/validate")
     public ResponseEntity<TokenResponse> validateToken(@RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.ok(this.userService.validateToken(authHeader));
+    }
+
+
+    @GetMapping("/transfer/{id}")
+    public ResponseEntity<User> getUser(@PathVariable String id) {
+        return ResponseEntity.ok(this.userService.getUser(id));
     }
 
 }

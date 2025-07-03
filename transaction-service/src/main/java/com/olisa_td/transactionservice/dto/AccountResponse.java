@@ -4,19 +4,14 @@ import java.math.BigDecimal;
 
 public class AccountResponse {
     private String id;
-    private int accountNumber;
+    private String accountNumber;
     private String userId;
     private BigDecimal balance;
     private String accountType;
     private String accountStatus;
 
-    public AccountResponse(String id, int accountNumber, String userId, BigDecimal balance, String accountType, String accountStatus) {
-        this.id = id;
-        this.accountNumber = accountNumber;
-        this.userId = userId;
-        this.balance = balance;
-        this.accountType = accountType;
-        this.accountStatus = accountStatus;
+    public AccountResponse() {
+
     }
 
 
@@ -28,11 +23,11 @@ public class AccountResponse {
         this.id = id;
     }
 
-    public int getAccountNumber() {
+    public String getAccountNumber() {
         return accountNumber;
     }
 
-    public void setAccountNumber(int accountNumber) {
+    public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
     }
 

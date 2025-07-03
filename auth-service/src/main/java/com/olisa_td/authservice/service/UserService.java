@@ -5,6 +5,7 @@ import com.olisa_td.authservice.dto.SignupRequest;
 import com.olisa_td.authservice.dto.TokenResponse;
 import com.olisa_td.authservice.exception.domain.EmailExistException;
 import com.olisa_td.authservice.exception.domain.InValidTokenException;
+import com.olisa_td.authservice.exception.domain.UserNotFoundException;
 import com.olisa_td.authservice.jpa.Role;
 import com.olisa_td.authservice.jpa.User;
 import com.olisa_td.authservice.repository.UserRepository;
@@ -12,8 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -58,6 +62,15 @@ public class UserService {
 
         return this.jwtService.generateToken(user.getId().toString(),user.getRole().name());
     }
+
+
+
+    public User getUser(String id) {
+
+        return this.userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
 
 
 

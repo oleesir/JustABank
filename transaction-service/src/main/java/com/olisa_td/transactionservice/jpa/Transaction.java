@@ -16,25 +16,33 @@ public class Transaction {
         @GeneratedValue(strategy = GenerationType.UUID)
         private UUID id;
 
-        @Column(name = "account_id", nullable = false)
-        private String accountId;
-
         @Column(name = "user_id", nullable = false)
         private String userId;
 
-        @Column(name = "amount",nullable = false)
+        @Column(name = "amount")
         private BigDecimal amount;
 
         @Column(name = "transaction_type")
         @Enumerated(EnumType.STRING)
         private TransactionType transactionType;
 
-        @Column(name = "status",nullable = false)
-        @Enumerated(EnumType.STRING)
-        private TransactionStatus transactionStatus;
+        @Column(name = "account_number")
+        private Long accountNumber;
+
+        @Column(name = "email")
+        private String email;
+
+        @Column(name = "recipient_email")
+        private String recipientEmail;
+
+        @Column(name = "recipient_account_number")
+        private Long recipientAccountNumber;
 
         @Column(name = "description",length = 5000)
         private String description;
+
+        @Column(name = "reference_code")
+        private String referenceCode;
 
         @Column(name = "date",nullable = false)
         private Date timeStamp;
@@ -42,10 +50,7 @@ public class Transaction {
 
 
         public Transaction() {
-                this.transactionType = TransactionType.WITHDRAW;
-                this.timeStamp = new Date();
         }
-
 
         public UUID getId() {
                 return id;
@@ -55,13 +60,6 @@ public class Transaction {
                 this.id = id;
         }
 
-        public String getAccountId() {
-                return accountId;
-        }
-
-        public void setAccountId(String accountId) {
-                this.accountId = accountId;
-        }
 
         public String getUserId() {
                 return userId;
@@ -87,12 +85,21 @@ public class Transaction {
                 this.transactionType = transactionType;
         }
 
-        public TransactionStatus getTransactionStatus() {
-                return transactionStatus;
+
+        public Long getAccountNumber() {
+                return accountNumber;
         }
 
-        public void setTransactionStatus(TransactionStatus transactionStatus) {
-                this.transactionStatus = transactionStatus;
+        public void setAccountNumber(Long accountNumber) {
+                this.accountNumber = accountNumber;
+        }
+
+        public Long getRecipientAccountNumber() {
+                return recipientAccountNumber;
+        }
+
+        public void setRecipientAccountNumber(Long recipientAccountNumber) {
+                this.recipientAccountNumber = recipientAccountNumber;
         }
 
         public String getDescription() {
@@ -103,23 +110,57 @@ public class Transaction {
                 this.description = description;
         }
 
+        public String getEmail() {
+                return email;
+        }
+
+        public void setEmail(String email) {
+                this.email = email;
+        }
+
+        public String getRecipientEmail() {
+                return recipientEmail;
+        }
+
+        public void setRecipientEmail(String recipientEmail) {
+                this.recipientEmail = recipientEmail;
+        }
+
+        public String getReferenceCode() {
+                return referenceCode;
+        }
+
+        public void setReferenceCode(String referenceCode) {
+                this.referenceCode = referenceCode;
+        }
+
         public Date getTimeStamp() {
                 return timeStamp;
         }
 
+        public void setTimeStamp(Date timeStamp) {
+                this.timeStamp = timeStamp;
+        }
 
         @Override
         public String toString() {
                 String timeStamp = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(this.timeStamp);
                 return "Transaction{" +
                         "id=" + id +
-                        ", accountId='" + accountId + '\'' +
                         ", userId='" + userId + '\'' +
                         ", amount=" + amount +
                         ", transactionType=" + transactionType +
-                        ", transactionStatus=" + transactionStatus +
+                        ", accountNumber='" + accountNumber + '\'' +
+                        ", recipientAccountNumber='" + recipientAccountNumber + '\'' +
+                        ", email='" + email + '\'' +
+                        ", recipientEmail='" + recipientEmail + '\'' +
+                        ", referenceCode='" + referenceCode + '\'' +
                         ", description='" + description + '\'' +
-                        ", date=" + timeStamp +
+                        ", timeStamp=" + timeStamp +
                         '}';
         }
+
+
 }
+
+

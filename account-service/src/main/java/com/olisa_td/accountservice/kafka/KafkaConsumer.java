@@ -9,10 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-import transaction.events.TransactionEvent;
-
+import transaction.events.UpdateAccountBalanceEvent;
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Service
 public class KafkaConsumer {
@@ -26,12 +24,12 @@ public class KafkaConsumer {
     @KafkaListener(topics="transaction", groupId = "account-service")
     public void consumeEvent(byte[] event) {
         try {
-            TransactionEvent transactionEvent = TransactionEvent.parseFrom(event);
+            UpdateAccountBalanceEvent updateAccountBalanceEvent = UpdateAccountBalanceEvent.parseFrom(event);
 
-            Account account = accountRepository.findById(UUID.fromString(transactionEvent.getAccountId()))
+            Account account = accountRepository.findByAccountNumber(updateAccountBalanceEvent.getAccountNumber())
                     .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
 
-            account.setBalance(new BigDecimal(transactionEvent.getNewBalance()));
+            account.setBalance(new BigDecimal(updateAccountBalanceEvent.getNewBalance()));
 
             this.accountRepository.save(account);
 

@@ -13,7 +13,7 @@ public class Account {
     private UUID id;
 
     @Column(name = "account_number", unique = true, nullable = false)
-    private int accountNumber;
+    private String accountNumber;
 
     @Column(name = "user_id", nullable = false)
     private String userId;
@@ -43,11 +43,11 @@ public class Account {
         this.id = id;
     }
 
-    public int getAccountNumber() {
+    public String getAccountNumber() {
         return accountNumber;
     }
 
-    public void setAccountNumber(int accountNumber) {
+    public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
     }
 

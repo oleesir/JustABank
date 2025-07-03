@@ -41,7 +41,7 @@ public class AccountService {
         Account account = new Account();
 
         account.setUserId(userId);
-        account.setAccountNumber(generatedNum);
+        account.setAccountNumber(String.valueOf(generatedNum));
         account.setBalance(BigDecimal.valueOf(0.00));
         account.setAccountType(typeOfAccount);
         account.setAccountStatus(AccountStatus.OPEN);
@@ -62,8 +62,14 @@ public class AccountService {
     }
 
 
-    public Account getAccount(String id){
+    public Account getOwnAccount(String id){
         return accountRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
+    }
+
+
+    public Account getUserAccount(String accountNumber){
+        return accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
     }
 

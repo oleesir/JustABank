@@ -2,33 +2,29 @@ package com.olisa_td.transactionservice.dto;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
-public class TransactionRequest {
+public class TransferRequest {
 
-    @NotNull(message = "Transaction id is required.")
     private String id;
 
     @NotNull(message = "Amount is required.")
     private BigDecimal amount;
 
-
-    @NotNull(message = "Transaction type is required.")
-    @Positive(message = "Invalid transaction type. Allowed values is DEPOSIT, WITHDRAW")
-    private String transactionType;
-
+    @NotNull(message = "Account number is required.")
     @Digits(integer = 10, fraction = 0, message = "Account number must be a numeric value with up to 10 digits.")
-    private Long receiversAccountNumber;
+    private Long accountNumber;
 
     private String description;
 
 
-    public TransactionRequest() {
-
+    public TransferRequest(String id, BigDecimal amount, Long accountNumber, String description) {
+        this.id = id;
+        this.amount = amount;
+        this.accountNumber = accountNumber;
+        this.description = description;
     }
-
 
     public String getId() {
         return id;
@@ -46,22 +42,12 @@ public class TransactionRequest {
         this.amount = amount;
     }
 
-
-
-    public String getTransactionType() {
-        return transactionType;
+    public Long getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
-    }
-
-    public Long getReceiversAccountNumber() {
-        return receiversAccountNumber;
-    }
-
-    public void setReceiversAccountNumber(Long receiversAccountNumber) {
-        this.receiversAccountNumber = receiversAccountNumber;
+    public void setAccountNumber(Long accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public String getDescription() {

@@ -1,10 +1,21 @@
-syntax = "proto3";
+ syntax = "proto3";
 
 package transaction.events;
 option java_multiple_files = true;
 
-message TransactionEvent {
-  string accountId = 1;
+message UpdateAccountBalanceEvent {
+  string accountNumber = 1;
   string newBalance = 2;
-  string event_type = 3;
 }
+
+
+ message ReceiversTrxEmailEvent {
+  string transactionId = 1;
+   string receiverNewBalance = 2;
+   string amount = 3;
+   string receiverAccountNumber = 4;
+   string eventDate = 5;
+   string receiverFirstName = 6;
+   string receiverLastName = 7;
+   string receiverEmail = 8;
+ }
