@@ -1,38 +1,34 @@
 package com.olisa_td.transactionservice.dto;
 
 import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public class TransferRequest {
-
-    private String id;
+public class TransferTrxRequestDTO {
 
     @NotNull(message = "Amount is required.")
+    @Min(value = 0, message = "Account number must be positive.")
     private BigDecimal amount;
 
     @NotNull(message = "Account number is required.")
     @Digits(integer = 10, fraction = 0, message = "Account number must be a numeric value with up to 10 digits.")
     private Long accountNumber;
 
+    @NotNull(message = "Recipient number is required.")
+    @Digits(integer = 10, fraction = 0, message = "Account number must be a numeric value with up to 10 digits.")
+    private Long recipientAccountNumber;
+
     private String description;
 
 
-    public TransferRequest(String id, BigDecimal amount, Long accountNumber, String description) {
-        this.id = id;
-        this.amount = amount;
-        this.accountNumber = accountNumber;
-        this.description = description;
+
+    public TransferTrxRequestDTO() {
+
     }
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public BigDecimal getAmount() {
         return amount;
@@ -57,4 +53,14 @@ public class TransferRequest {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public Long getRecipientAccountNumber() {
+        return recipientAccountNumber;
+    }
+
+    public void setRecipientAccountNumber(Long recipientAccountNumber) {
+        this.recipientAccountNumber = recipientAccountNumber;
+    }
+
+
 }

@@ -62,4 +62,17 @@ public class AccountResponse {
     public void setAccountStatus(String accountStatus) {
         this.accountStatus = accountStatus;
     }
+
+
+    @Override
+    public String toString() {
+        return "AccountResponse{" +
+                "id='" + id + '\'' +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", userId='" + userId + '\'' +
+                ", balance=" + balance +
+                ", accountType='" + accountType + '\'' +
+                ", accountStatus='" + accountStatus + '\'' +
+                '}';
+    }
 }

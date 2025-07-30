@@ -1,12 +1,22 @@
 server:
   port: 4003
+
 account:
   service:
     url: ${ACCOUNT_SERVICE}
+
+auth:
+  service:
+    url: ${AUTH_SERVICE}
+
+transaction:
+  daily_limit: 50000.00
+
 logging:
   level:
     web: INFO
     '[com.olisa_td.transactionservice]': DEBUG
+
 spring:
   application:
     name: transaction-service

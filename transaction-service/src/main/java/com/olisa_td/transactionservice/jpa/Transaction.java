@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
@@ -19,33 +19,31 @@ public class Transaction {
         @Column(name = "user_id", nullable = false)
         private String userId;
 
-        @Column(name = "amount")
+        @Column(name = "amount", nullable = false)
         private BigDecimal amount;
 
-        @Column(name = "transaction_type")
+        @Column(name = "transaction_type",nullable = false)
         @Enumerated(EnumType.STRING)
         private TransactionType transactionType;
+
+        @Column(name = "transaction_purpose", nullable = false)
+        @Enumerated(EnumType.STRING)
+        private TransactionPurpose transactionPurpose;
 
         @Column(name = "account_number")
         private Long accountNumber;
 
-        @Column(name = "email")
-        private String email;
-
-        @Column(name = "recipient_email")
-        private String recipientEmail;
-
         @Column(name = "recipient_account_number")
         private Long recipientAccountNumber;
 
-        @Column(name = "description",length = 5000)
+        @Column(name = "description",length = 5000,nullable = false)
         private String description;
 
         @Column(name = "reference_code")
         private String referenceCode;
 
         @Column(name = "date",nullable = false)
-        private Date timeStamp;
+        private Timestamp timeStamp;
 
 
 
@@ -59,7 +57,6 @@ public class Transaction {
         public void setId(UUID id) {
                 this.id = id;
         }
-
 
         public String getUserId() {
                 return userId;
@@ -85,7 +82,6 @@ public class Transaction {
                 this.transactionType = transactionType;
         }
 
-
         public Long getAccountNumber() {
                 return accountNumber;
         }
@@ -110,20 +106,12 @@ public class Transaction {
                 this.description = description;
         }
 
-        public String getEmail() {
-                return email;
+        public TransactionPurpose getTransactionPurpose() {
+                return transactionPurpose;
         }
 
-        public void setEmail(String email) {
-                this.email = email;
-        }
-
-        public String getRecipientEmail() {
-                return recipientEmail;
-        }
-
-        public void setRecipientEmail(String recipientEmail) {
-                this.recipientEmail = recipientEmail;
+        public void setTransactionPurpose(TransactionPurpose transactionPurpose) {
+                this.transactionPurpose = transactionPurpose;
         }
 
         public String getReferenceCode() {
@@ -134,17 +122,17 @@ public class Transaction {
                 this.referenceCode = referenceCode;
         }
 
-        public Date getTimeStamp() {
+        public Timestamp getTimeStamp() {
                 return timeStamp;
         }
 
-        public void setTimeStamp(Date timeStamp) {
+        public void setTimeStamp(Timestamp timeStamp) {
                 this.timeStamp = timeStamp;
         }
 
         @Override
         public String toString() {
-                String timeStamp = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(this.timeStamp);
+                String timeStamp = new SimpleDateFormat("MMM dd, yyyy h:mm a").format(this.timeStamp);
                 return "Transaction{" +
                         "id=" + id +
                         ", userId='" + userId + '\'' +
@@ -152,8 +140,7 @@ public class Transaction {
                         ", transactionType=" + transactionType +
                         ", accountNumber='" + accountNumber + '\'' +
                         ", recipientAccountNumber='" + recipientAccountNumber + '\'' +
-                        ", email='" + email + '\'' +
-                        ", recipientEmail='" + recipientEmail + '\'' +
+                        ", transactionPurpose='" + transactionPurpose + '\'' +
                         ", referenceCode='" + referenceCode + '\'' +
                         ", description='" + description + '\'' +
                         ", timeStamp=" + timeStamp +
@@ -162,5 +149,3 @@ public class Transaction {
 
 
 }
-
-

@@ -30,6 +30,10 @@ public class ExceptionHandling {
     }
 
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<HttpResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<HttpResponse> accessDeniedException() {

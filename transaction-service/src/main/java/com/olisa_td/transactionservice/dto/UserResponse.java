@@ -10,10 +10,8 @@ public class UserResponse {
     private String email;
 
 
-    public UserResponse(String firstName, String lastName, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+    public UserResponse() {
+
     }
 
     public String getFirstName() {
@@ -38,5 +36,14 @@ public class UserResponse {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "UserResponse{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

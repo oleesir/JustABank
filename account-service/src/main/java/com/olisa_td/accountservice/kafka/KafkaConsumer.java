@@ -21,7 +21,7 @@ public class KafkaConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
 
-    @KafkaListener(topics="transaction", groupId = "account-service")
+    @KafkaListener(topics="trx.updateBalance", groupId = "account-service")
     public void consumeEvent(byte[] event) {
         try {
             UpdateAccountBalanceEvent updateAccountBalanceEvent = UpdateAccountBalanceEvent.parseFrom(event);
@@ -32,6 +32,7 @@ public class KafkaConsumer {
             account.setBalance(new BigDecimal(updateAccountBalanceEvent.getNewBalance()));
 
             this.accountRepository.save(account);
+
 
         } catch (InvalidProtocolBufferException e) {
             logger.error("Error deserializing event {}", e.getMessage());

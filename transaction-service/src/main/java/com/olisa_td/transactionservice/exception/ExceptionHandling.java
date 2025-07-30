@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import static org.springframework.http.HttpStatus.*;
 
 
@@ -23,9 +23,25 @@ public class ExceptionHandling {
 
 
     private static final String NOT_ENOUGH_PERMISSION = "You do not have enough permission";
-    private static final String INCORRECT_ENUM_CREDENTIALS = "Invalid transaction type. Accepted values are: FUND, WITHDRAW, DEPOSIT";
+    private static final String INCORRECT_ENUM_CREDENTIALS = "Invalid transaction type. Accepted values are:, WITHDRAW, DEPOSIT";
     private static final String INTERNAL_SERVER_ERROR_MSG = "An error occurred while processing the request";
 
+
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<HttpResponse> handleValidationException(MethodArgumentNotValidException ex){
+        StringBuilder errors = new StringBuilder();
+
+        for(FieldError error : ex.getBindingResult().getFieldErrors()){
+            if(!errors.isEmpty()){
+                errors.append(",");
+            }
+            errors.append(error.getDefaultMessage());
+        }
+
+        return this.createHttpResponse(BAD_REQUEST,errors.toString());
+    }
 
 
 
@@ -65,14 +81,13 @@ public class ExceptionHandling {
     }
 
 
-
-//    @ExceptionHandler(BadCredentialsException.class)
-//    public ResponseEntity<HttpResponse> badCredentialsException() {
-//        return this.createHttpResponse(BAD_REQUEST, INCORRECT_CREDENTIALS);
-//    }
-
     @ExceptionHandler(InvalidTransactionException.class)
     public ResponseEntity<HttpResponse> handleInvalidTransactionException(InvalidTransactionException ex) {
+        return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(DailyLimitException.class)
+    public ResponseEntity<HttpResponse> handleInvalidTransactionException(DailyLimitException ex) {
         return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
     }
 
@@ -93,11 +108,11 @@ public class ExceptionHandling {
         return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
-        logger.error(exception.getMessage(),exception);
-        return this.createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
+//        logger.error(exception.getMessage(),exception);
+//        return this.createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+//    }
 
 }
 

@@ -3,6 +3,7 @@ package com.olisa_td.accountservice.jpa;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
@@ -28,6 +29,9 @@ public class Account {
     @Column(name = "status",nullable = false)
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
+
+    @Column(name = "date",nullable = false)
+    private Timestamp timeStamp;
 
 
     public Account() {
@@ -83,15 +87,24 @@ public class Account {
         this.accountStatus = accountStatus;
     }
 
+    public Timestamp getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Timestamp timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
     @Override
     public String toString() {
         return "Account{" +
                 "id=" + id +
-                ", accountNumber=" + accountNumber +
-                ", userId=" + userId +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", userId='" + userId + '\'' +
                 ", balance=" + balance +
                 ", accountType=" + accountType +
                 ", accountStatus=" + accountStatus +
+                ", timeStamp=" + timeStamp +
                 '}';
     }
 }

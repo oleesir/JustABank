@@ -29,7 +29,6 @@ public  class AccountRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         String userId = req.getHeader("x-userId");
         String userRole = req.getHeader("x-role");
-        logger.debug("VALUES {}", userRole);
 
         if (userId != null && userRole != null) {
             List<GrantedAuthority> authorities = Arrays.stream(userRole.split(","))

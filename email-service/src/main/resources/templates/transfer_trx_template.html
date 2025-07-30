@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction Receipt</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            border: #777777;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            text-align: center;
+            border-bottom: 2px dashed #4caf50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .email-header h2 {
+            color: #4caf50;
+        }
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+        }
+        .receipt-item:last-child {
+            border-bottom: none;
+        }
+        .label::after {
+            font-weight: bold;
+        }
+        .padded {
+            padding-left: 10px;
+        }
+        .email-footer {
+            text-align: center;
+            font-size: 13px;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div style="padding: 10px; font-size: 15px; color: #333;">
+        We wish to inform you that a
+        <strong th:text="${transferTrxEvent.getTransactionType() + ' transaction'}"></strong>
+
+        occurred on your account.
+    </div>
+
+    <div class="email-header">
+        <h2>Transaction Receipt</h2>
+    </div>
+
+    <div class="receipt-item">
+        <span class="label">Purpose :</span>
+        <span th:text="${transferTrxEvent.getTransactionPurpose()}"  class="padded"></span>
+    </div>
+    <div class="receipt-item">
+        <span class="label">Ref Code :</span>
+        <span th:text="${transferTrxEvent.getRefCode()}" class="padded"></span>
+    </div>
+    <div class="receipt-item">
+        <span class="label">Date :</span>
+        <span th:text="${transferTrxEvent.getTimeStamp()}" class="padded"></span>
+    </div>
+
+    <div class="receipt-item">
+        <span class="label">From :</span>
+        <span th:text="${transferTrxEvent.getSenderFirstName() + ' ' + transferTrxEvent.getSenderLastName()}" class="padded"></span>
+    </div>
+    <div class="receipt-item">
+        <span class="label">From Email :</span>
+        <span th:text="${transferTrxEvent.getSenderEmail()}" class="padded"></span>
+    </div>
+    <div class="receipt-item">
+        <span class="label">Account Number :</span>
+        <span th:text="${transferTrxEvent.getAccountNumber()}" class="padded"></span>
+    </div>
+    <div class="receipt-item">
+        <span class="label">Balance :</span>
+        <span th:text="${transferTrxEvent.getBalance()}" class="padded"></span>
+    </div>
+
+    <div class="receipt-item">
+        <span class="label">To :</span>
+        <span th:text="${transferTrxEvent.getRecipientFirstName() + ' ' + transferTrxEvent.getRecipientLastName()}" class="padded"></span>
+    </div>
+    <div class="receipt-item">
+        <span class="label">To Email :</span>
+        <span th:text="${transferTrxEvent.getRecipientEmail()}" class="padded"></span>
+    </div>
+    <div class="receipt-item" id="yes">
+        <span class="label">To Account number :</span>
+        <span th:text="${transferTrxEvent.getRecipientAccountNumber()}" class="padded"></span>
+    </div>
+
+    <div class="receipt-item">
+        <span class="label">Amount :</span>
+        <span th:text="CAD + '' + ${transferTrxEvent.getAmount()}" class="padded"></span>
+    </div>
+    <div class="receipt-item" style="flex-direction: column;">
+        <label class="label" >Description :</label>
+        <div style="padding-top: 5px;" th:text="${transferTrxEvent.getDescription()}" class="padded"></div>
+    </div>
+
+    <div class="email-footer">
+        <p>Need help or have questions?</p>
+        <p>Call us Monday to Friday, 8:30 a.m. – 5:00 p.m. ET</p>
+        <p><strong>1-800-268-0097</strong> | <strong>TTY:</strong> 1-800-269-0095</p>
+    </div>
+</div>
+</body>
+</html>

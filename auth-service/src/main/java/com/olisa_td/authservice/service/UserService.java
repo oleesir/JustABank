@@ -1,5 +1,6 @@
 package com.olisa_td.authservice.service;
 
+import com.olisa_td.authservice.domain.PageResponse;
 import com.olisa_td.authservice.dto.LoginRequest;
 import com.olisa_td.authservice.dto.SignupRequest;
 import com.olisa_td.authservice.dto.TokenResponse;
@@ -12,12 +13,15 @@ import com.olisa_td.authservice.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+
 
 @Service
 public class UserService {
@@ -71,7 +75,24 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
+//    public PageResponse<Feed> getOtherUsersFeeds(int pageNum, int pageSize) {
+//
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        User user = this.userRepository.findByUsername(username)
+//                .orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
+//
+//        Page<Feed> paged = this.feedRepository.findByUserNot(user, PageRequest.of(pageNum, pageSize, Sort.by("feedId").descending()));
+//
+//        return new PageResponse<Feed>(paged);
+//    }
 
+
+    public PageResponse<User> getAllUsers (int pageNum, int pageSize){
+        Page<User> paged = userRepository.findAll(
+                PageRequest.of(pageNum, pageSize, Sort.by("id").descending()));
+
+        return new PageResponse<User>(paged);
+    }
 
 
     public TokenResponse validateToken(String authHeader){

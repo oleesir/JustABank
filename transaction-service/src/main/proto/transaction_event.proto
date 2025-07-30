@@ -3,19 +3,58 @@
 package transaction.events;
 option java_multiple_files = true;
 
+
+ message TrxEventWrapper {
+   oneof event {
+     UpdateAccountBalanceEvent updateAccountBalanceEvent = 1;
+     DepositOrWithdrawTrxEvent depositOrWithdrawTrxEvent = 2;
+     TransferTrxEvent transferTrxEvent = 3;
+   }
+ }
+
+
 message UpdateAccountBalanceEvent {
   string accountNumber = 1;
   string newBalance = 2;
+  string eventType = 3;
 }
 
 
- message ReceiversTrxEmailEvent {
-  string transactionId = 1;
-   string receiverNewBalance = 2;
-   string amount = 3;
-   string receiverAccountNumber = 4;
-   string eventDate = 5;
-   string receiverFirstName = 6;
-   string receiverLastName = 7;
-   string receiverEmail = 8;
+
+ message DepositOrWithdrawTrxEvent {
+   string senderFirstName = 1;
+   string senderLastName = 2;
+   string accountNumber = 3;
+   string amount = 4;
+   string recipientFirstName = 5;
+   string recipientLastName = 6;
+   string balance = 7;
+   string description = 8;
+   string transactionPurpose = 9;
+   string transactionType = 10;
+   string timeStamp = 11;
+   string refCode = 12;
+   string senderEmail = 13;
+   string recipientEmail = 14;
+   string eventType = 15;
+ }
+
+
+ message TransferTrxEvent {
+   string senderFirstName = 1;
+   string senderLastName = 2;
+   string accountNumber = 3;
+   string amount = 4;
+   string recipientFirstName = 5;
+   string recipientLastName = 6;
+   string recipientAccountNumber = 7;
+   string balance = 8;
+   string description = 9;
+   string transactionPurpose = 10;
+   string transactionType = 11;
+   string timeStamp = 12;
+   string refCode = 13;
+   string senderEmail = 14;
+   string recipientEmail = 15;
+   string eventType = 16;
  }
