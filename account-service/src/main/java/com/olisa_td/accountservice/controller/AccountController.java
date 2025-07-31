@@ -36,16 +36,18 @@ public class AccountController {
     }
 
 
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_STAFF', 'ROLE_ADMIN')")
-    public ResponseEntity<Account> getAccount(@PathVariable String id){
-        return ResponseEntity.ok(this.accountService.getOwnerAccount(id));
+    public ResponseEntity<Account> getUserAccount(@PathVariable String id){
+        return ResponseEntity.ok(this.accountService.getUserAccount(id));
     }
+
 
 
     @GetMapping("/my_accounts")
     @PreAuthorize("hasAnyRole('ROLE_USER')")
-    public ResponseEntity<List<Account>> getAccounts(){
+    public ResponseEntity<List<Account>> getMyAccounts(){
         return ResponseEntity.ok(this.accountService.getOwnerAccounts());
     }
 
@@ -59,7 +61,7 @@ public class AccountController {
 
     @GetMapping("/account_number/{accountNumber}")
     public ResponseEntity<Account> getAccountNumber(@PathVariable String accountNumber){
-        return ResponseEntity.ok(this.accountService.getUserAccount(accountNumber));
+        return ResponseEntity.ok(this.accountService.getUserAccountNum(accountNumber));
     }
 
 

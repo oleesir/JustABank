@@ -2,6 +2,8 @@ package com.olisa_td.transactionservice.repository;
 
 import com.olisa_td.transactionservice.jpa.Transaction;
 import com.olisa_td.transactionservice.jpa.TransactionType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.sql.Timestamp;
@@ -16,4 +18,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             Timestamp start,
             Timestamp end
     );
+
+
+    Page<Transaction> findAllByUserId(String userId, Pageable pageable);
 }

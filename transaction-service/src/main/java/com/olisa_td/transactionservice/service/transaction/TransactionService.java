@@ -1,12 +1,10 @@
 package com.olisa_td.transactionservice.service.transaction;
 
+import com.olisa_td.transactionservice.domain.PageResponse;
 import com.olisa_td.transactionservice.dto.*;
 import com.olisa_td.transactionservice.dto.DepositOrWithdrawTrxRequestDTO;
 import com.olisa_td.transactionservice.dto.TrxResponseDTO;
-import com.olisa_td.transactionservice.exception.domain.AccountNotFoundException;
-import com.olisa_td.transactionservice.exception.domain.DailyLimitException;
-import com.olisa_td.transactionservice.exception.domain.InsufficientFundsException;
-import com.olisa_td.transactionservice.exception.domain.InvalidTransactionException;
+import com.olisa_td.transactionservice.exception.domain.*;
 import com.olisa_td.transactionservice.jpa.Transaction;
 import com.olisa_td.transactionservice.jpa.TransactionPurpose;
 import com.olisa_td.transactionservice.jpa.TransactionType;
@@ -21,6 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -54,6 +56,8 @@ public class TransactionService {
 
 
     public TrxResponseDTO processDepositOrWithdrawTrx(DepositOrWithdrawTrxRequestDTO depositOrWithdrawTrxRequestDTO) {
+        UserResponse sender = getUserFromAuthServiceById(getUserIdCxtHolder());
+
         BigDecimal updatedBalance;
 
 
@@ -98,8 +102,8 @@ public class TransactionService {
 
          kafkaProducer.updateAccountBalanceEvent(accountResponse.getAccountNumber(), updatedBalance,"UPDATE_ACCOUNT_BALANCE");
 
-         UserResponse recipient = getUserById(accountResponse.getUserId());
-        UserResponse sender = getUserById(getUserId());
+         UserResponse recipient = getUserFromAuthServiceById(accountResponse.getUserId());
+
 
         DepositOrWithdrawEmailDTO trxEmailDTO = new DepositOrWithdrawEmailDTO();
 
@@ -130,7 +134,9 @@ public class TransactionService {
 
 
     public TrxResponseDTO processTransferTrx(TransferTrxRequestDTO transferTrxRequestDTO){
-        String userId = getUserId();
+
+         UserResponse originUser = getUserFromAuthServiceById(getUserIdCxtHolder());
+
         AccountResponse senderAcct = getAccountByAccountNumber(transferTrxRequestDTO.getAccountNumber().toString());
         AccountResponse recipientAcct = getAccountByAccountNumber(transferTrxRequestDTO.getRecipientAccountNumber().toString());
 
@@ -143,8 +149,7 @@ public class TransactionService {
             throw new AccountNotFoundException("Recipient account not found.");
         }
 
-        UserResponse originUser = getUserById(senderAcct.getUserId());
-        UserResponse destinationUser = getUserById(recipientAcct.getUserId());
+        UserResponse destinationUser = getUserFromAuthServiceById(recipientAcct.getUserId());
 
 
         if(hasExceededDailyLimit(senderAcct.getAccountNumber(),transferTrxRequestDTO.getAmount())){
@@ -171,7 +176,7 @@ public class TransactionService {
 
 
         Transaction fromTrx = TransferTrxMapper.toModel(transferTrxRequestDTO,TransactionType.DEBIT,refCode);
-        fromTrx.setUserId(userId);
+        fromTrx.setUserId(originUser.getId());;
         fromTrx.setTransactionPurpose(purpose);
         Transaction  savedSenderTrx = transactionRepository.save(fromTrx);
 
@@ -227,15 +232,57 @@ public class TransactionService {
     }
 
 
+    public PageResponse<Transaction> getAllTransactions(int pageNum, int pageSize) {
+        getUserFromAuthServiceById(getUserIdCxtHolder());
+
+        if (pageNum < 1) {
+            throw new IllegalArgumentException("Page number must be greater than 0.");
+        }
+        if (pageSize < 1) {
+            throw new IllegalArgumentException("Page size must be greater than 0.");
+        }
+
+        Page<Transaction> paged = this.transactionRepository.findAll(PageRequest.of(pageNum - 1, pageSize, Sort.by("timeStamp").descending()));
+
+        return new PageResponse<Transaction>(paged);
+    }
 
 
-    private String getUserId () {
+
+
+    public PageResponse<Transaction> getAllTransactionsByUserId(int pageNum, int pageSize) {
+       UserResponse user =  getUserFromAuthServiceById(getUserIdCxtHolder());
+
+        if (pageNum < 1) {
+            throw new IllegalArgumentException("Page number must be greater than 0.");
+        }
+        if (pageSize < 1) {
+            throw new IllegalArgumentException("Page size must be greater than 0.");
+        }
+
+        Page<Transaction> paged = this.transactionRepository.findAllByUserId(user.getId(),PageRequest.of(pageNum - 1, pageSize, Sort.by("timeStamp").descending()));
+
+        return new PageResponse<Transaction>(paged);
+    }
+
+
+    public Transaction getTransaction(String id){
+        getUserFromAuthServiceById(getUserIdCxtHolder());
+
+        return transactionRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction does not exist"));
+    }
+
+
+
+
+    private String getUserIdCxtHolder () {
 
             return SecurityContextHolder.getContext().getAuthentication().getName();
         }
 
 
-    private UserResponse getUserById (String id){
+    private UserResponse getUserFromAuthServiceById (String id){
             return userServiceImpl.getUser("/users/{id}", id).block();
         }
 

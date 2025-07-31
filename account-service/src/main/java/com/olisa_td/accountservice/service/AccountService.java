@@ -3,19 +3,20 @@ package com.olisa_td.accountservice.service;
 
 import com.olisa_td.accountservice.domain.PageResponse;
 import com.olisa_td.accountservice.dto.AccountRequest;
+import com.olisa_td.accountservice.dto.UserResponse;
 import com.olisa_td.accountservice.exception.domain.AccountNotFoundException;
 import com.olisa_td.accountservice.exception.domain.InvalidAccountException;
 import com.olisa_td.accountservice.jpa.Account;
 import com.olisa_td.accountservice.jpa.AccountStatus;
 import com.olisa_td.accountservice.jpa.AccountType;
 import com.olisa_td.accountservice.repository.AccountRepository;
+import com.olisa_td.accountservice.service.user.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -34,9 +35,12 @@ public class AccountService {
     @Autowired
     private  AccountRepository accountRepository;
 
+    @Autowired
+    private UserServiceImpl userServiceImpl;
+
 
     public Account createAccount(AccountRequest accountRequest){
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserResponse user = getUserFromAuthServiceById(getUserIdCxtHolder());
         int generatedNum = generateAccountNumber();
         AccountType typeOfAccount;
 
@@ -48,7 +52,7 @@ public class AccountService {
 
         Account account = new Account();
 
-        account.setUserId(userId);
+        account.setUserId(user.getId());
         account.setAccountNumber(String.valueOf(generatedNum));
         account.setBalance(BigDecimal.valueOf(0.00));
         account.setAccountType(typeOfAccount);
@@ -62,6 +66,7 @@ public class AccountService {
 
 
     public void deleteAccount(String id) {
+        getUserFromAuthServiceById(getUserIdCxtHolder());
 
         Account account = accountRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
@@ -70,11 +75,14 @@ public class AccountService {
 
     }
 
+
     public PageResponse<Account> getAllAccounts(int pageNum, int pageSize) {
-        if (pageNum < 0) {
+        getUserFromAuthServiceById(getUserIdCxtHolder());
+
+        if (pageNum < 1) {
              throw new IllegalArgumentException("Page number must be greater than 0.");
         }
-        if (pageSize <= 0) {
+        if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than 0.");
         }
 
@@ -83,25 +91,32 @@ public class AccountService {
         return new PageResponse<Account>(paged);
     }
 
+
     public List<Account> getOwnerAccounts(){
-        return accountRepository.findAllByUserId(getUserId());
+        UserResponse user = getUserFromAuthServiceById(getUserIdCxtHolder());
+
+        return accountRepository.findAllByUserId(user.getId());
 
     }
 
 
-    public Account getOwnerAccount(String id){
+
+    public Account getUserAccount(String id){
+        getUserFromAuthServiceById(getUserIdCxtHolder());
+
         return accountRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
     }
 
 
-    public Account getUserAccount(String accountNumber){
+    public Account getUserAccountNum(String accountNumber){
         return accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
     }
 
 
     public Account updateAccountStatus(String id, String status) {
+        getUserFromAuthServiceById(getUserIdCxtHolder());
 
         Account account = accountRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
@@ -121,8 +136,13 @@ public class AccountService {
         return 10000000 + random.nextInt(90000000);
     }
 
-    private String getUserId () {
+    private String getUserIdCxtHolder () {
 
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
+
+    private UserResponse getUserFromAuthServiceById (String id){
+        return userServiceImpl.getUser("/users/{id}", id).block();
+    }
+
 }

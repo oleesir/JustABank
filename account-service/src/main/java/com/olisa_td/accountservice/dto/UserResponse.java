@@ -1,9 +1,9 @@
-package com.olisa_td.transactionservice.dto;
+package com.olisa_td.accountservice.dto;
 
 
 public class UserResponse {
 
-    private String id;
+    private  String id;
 
     private String firstName;
 
