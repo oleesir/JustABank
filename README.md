@@ -1,6 +1,55 @@
 # JustABank 
 
--This is a modular Spring Boot-based banking backend system built using the **microservices architecture**. It consists of independent services that communicate through REST APIs and (optionally) message queues or event-driven architecture.
+- This is a Java-based microservices banking system designed to manage core financial operations such as user authentication, account management, and transactions. The system is built using Spring Boot and follows a clean, scalable, and secure microservices architecture.
+
+---
+
+
+
+
+
+# 🏗️ Architecture Overview
+The application is composed of four independent microservices:
+
+## 🔐 Auth Service
+- Handles user registration, login, and token validation.
+
+- Issues and validates JWT tokens for securing communication between services.
+
+- Uses Spring Security and integrates with the gateway for role-based access control.
+
+## 💳 Account Service
+- Manages user bank accounts.
+
+- Supports operations like creating, updating, and changing the status of accounts (OPEN, SUSPENDED, CLOSED).
+
+- Trusts security headers set by the gateway and populates the SecurityContext accordingly.
+
+## 💸 Transaction Service
+- Handles debit, credit, and transfer operations.
+
+- Verifies account ownership and status via inter-service calls to the Account Service.
+
+- Communicates securely using WebClient and propagates authentication headers for authorization.
+
+## 🌐 API Gateway
+- Serves as the entry point for all client requests.
+
+- Routes requests to the appropriate downstream service.
+
+- Implements custom JWT authentication filters to validate tokens and forward identity headers (x-userId, x-role) downstream.
+
+- Centralized exception handling for unauthorized access.
+
+
+---
+
+## 🔐 Security
+
+- JWT is validated at the **gateway level**.
+- Downstream services **trust headers** and **populate the `SecurityContextHolder`**.
+- Protected endpoints use `@PreAuthorize` to restrict access by role (e.g. `USER`,`STAFF`, `ADMIN`).
+- Unauthorized access returns a JSON error message.
 
 ---
 
@@ -415,6 +464,26 @@ Successfully deleted.
 
 ---
 
+
+---
+
+## 🚦 Gateway API Environment Variables
+
+#### AUTH_SERVICE=
+---
+
+
+---
+
+## 🚦 Kafka Environment Variables
+
+
+#### KAFKA_CFG_ADVERTISED_LISTENERS=
+#### KAFKA_CFG_CONTROLLER_LISTENER_NAMES=
+#### KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=
+#### KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=
+#### KAFKA_CFG_LISTENERS=
+#### KAFKA_CFG_NODE_ID=
 
 ---
 
