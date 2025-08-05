@@ -18,7 +18,6 @@ public class TokenResponse {
 
 
 
-
     public String getRole() {
         return role;
     }
@@ -35,12 +34,4 @@ public class TokenResponse {
         this.id = id;
     }
 
-
-    @Override
-    public String toString() {
-        return "TokenResponse{" +
-                "id='" + id + '\'' +
-                ", role='" + role + '\'' +
-                '}';
-    }
 }

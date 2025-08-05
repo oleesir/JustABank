@@ -39,12 +39,6 @@ public class UserController {
         return ResponseEntity.ok(this.userService.validateToken(authHeader));
     }
 
-    @GetMapping("/users/{pageNum}/{pageSize}")
-    @PreAuthorize("hasAnyRole('ROLE_STAFF','ROLE_ADMIN')")
-    public ResponseEntity<PageResponse<User>> getAllUsers (@PathVariable int pageNum, @PathVariable int pageSize) {
-        return ResponseEntity.ok(this.userService.getAllUsers(pageNum,pageSize));
-    }
-
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUser(@PathVariable String id) {
         return ResponseEntity.ok(this.userService.getUser(id));

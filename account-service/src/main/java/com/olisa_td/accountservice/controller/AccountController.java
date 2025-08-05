@@ -2,6 +2,7 @@ package com.olisa_td.accountservice.controller;
 
 import com.olisa_td.accountservice.domain.PageResponse;
 import com.olisa_td.accountservice.dto.AccountRequest;
+import com.olisa_td.accountservice.dto.UpdateStatusRequestDTO;
 import com.olisa_td.accountservice.service.AccountService;
 import com.olisa_td.accountservice.jpa.Account;
 import jakarta.validation.Valid;
@@ -29,10 +30,10 @@ public class AccountController {
     }
 
 
-    @PatchMapping("/{id}/{status}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_STAFF', 'ROLE_ADMIN')")
-    public ResponseEntity<Account> updateAccountStatus(@PathVariable String id, @PathVariable String status){
-        return ResponseEntity.ok(this.accountService.updateAccountStatus(id,status));
+    public ResponseEntity<Account> updateAccountStatus(@PathVariable String id, @RequestBody UpdateStatusRequestDTO updateStatusRequestDTO){
+        return ResponseEntity.ok(this.accountService.updateAccountStatus(id,updateStatusRequestDTO));
     }
 
 
@@ -47,8 +48,8 @@ public class AccountController {
 
     @GetMapping("/my_accounts")
     @PreAuthorize("hasAnyRole('ROLE_USER')")
-    public ResponseEntity<List<Account>> getMyAccounts(){
-        return ResponseEntity.ok(this.accountService.getOwnerAccounts());
+    public  ResponseEntity<PageResponse<Account>> getMyAccounts(@RequestParam int pageNum, @RequestParam int pageSize){
+        return ResponseEntity.ok(this.accountService.getOwnerAccounts(pageNum, pageSize));
     }
 
 

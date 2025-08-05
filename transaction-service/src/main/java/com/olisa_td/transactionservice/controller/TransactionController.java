@@ -25,12 +25,12 @@ public class TransactionController {
         return ResponseEntity.ok(this.transactionService.processDepositOrWithdrawTrx(depositOrWithdrawTrxRequestDTO));
     }
 
+
     @PostMapping("/transfer")
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     public ResponseEntity<TrxResponseDTO>processTransaction(@Valid @RequestBody TransferTrxRequestDTO transferTrxRequestDTO){
         return ResponseEntity.ok(this.transactionService.processTransferTrx(transferTrxRequestDTO));
     }
-
 
 
     @GetMapping("")
@@ -41,7 +41,7 @@ public class TransactionController {
     }
 
 
-    @GetMapping("/my_trx")
+    @GetMapping("/my_transactions")
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     public ResponseEntity<PageResponse<Transaction>> getAllTransactionsByUserId(@RequestParam int pageNum, @RequestParam int pageSize) {
 

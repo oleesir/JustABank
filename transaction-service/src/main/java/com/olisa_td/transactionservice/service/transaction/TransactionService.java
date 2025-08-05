@@ -62,9 +62,8 @@ public class TransactionService {
 
 
         AccountResponse accountResponse = getAccountByAccountNumber(depositOrWithdrawTrxRequestDTO.getAccountNumber().toString());
-
         if (accountResponse == null) {
-            throw new AccountNotFoundException("Account not found");
+            throw new AccountNotFoundException("Account not found here");
         }
 
         if (depositOrWithdrawTrxRequestDTO.getTransactionPurpose() == TransactionPurpose.DEPOSIT) {
@@ -233,7 +232,6 @@ public class TransactionService {
 
 
     public PageResponse<Transaction> getAllTransactions(int pageNum, int pageSize) {
-        getUserFromAuthServiceById(getUserIdCxtHolder());
 
         if (pageNum < 1) {
             throw new IllegalArgumentException("Page number must be greater than 0.");
@@ -251,7 +249,7 @@ public class TransactionService {
 
 
     public PageResponse<Transaction> getAllTransactionsByUserId(int pageNum, int pageSize) {
-       UserResponse user =  getUserFromAuthServiceById(getUserIdCxtHolder());
+       String userId = getUserIdCxtHolder();
 
         if (pageNum < 1) {
             throw new IllegalArgumentException("Page number must be greater than 0.");
@@ -260,19 +258,17 @@ public class TransactionService {
             throw new IllegalArgumentException("Page size must be greater than 0.");
         }
 
-        Page<Transaction> paged = this.transactionRepository.findAllByUserId(user.getId(),PageRequest.of(pageNum - 1, pageSize, Sort.by("timeStamp").descending()));
+        Page<Transaction> paged = this.transactionRepository.findAllByUserId(userId,PageRequest.of(pageNum - 1, pageSize, Sort.by("timeStamp").descending()));
 
         return new PageResponse<Transaction>(paged);
     }
 
 
     public Transaction getTransaction(String id){
-        getUserFromAuthServiceById(getUserIdCxtHolder());
 
         return transactionRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction does not exist"));
     }
-
 
 
 

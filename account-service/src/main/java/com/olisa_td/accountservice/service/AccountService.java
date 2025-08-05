@@ -3,6 +3,7 @@ package com.olisa_td.accountservice.service;
 
 import com.olisa_td.accountservice.domain.PageResponse;
 import com.olisa_td.accountservice.dto.AccountRequest;
+import com.olisa_td.accountservice.dto.UpdateStatusRequestDTO;
 import com.olisa_td.accountservice.dto.UserResponse;
 import com.olisa_td.accountservice.exception.domain.AccountNotFoundException;
 import com.olisa_td.accountservice.exception.domain.InvalidAccountException;
@@ -66,7 +67,6 @@ public class AccountService {
 
 
     public void deleteAccount(String id) {
-        getUserFromAuthServiceById(getUserIdCxtHolder());
 
         Account account = accountRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
@@ -77,7 +77,6 @@ public class AccountService {
 
 
     public PageResponse<Account> getAllAccounts(int pageNum, int pageSize) {
-        getUserFromAuthServiceById(getUserIdCxtHolder());
 
         if (pageNum < 1) {
              throw new IllegalArgumentException("Page number must be greater than 0.");
@@ -92,17 +91,25 @@ public class AccountService {
     }
 
 
-    public List<Account> getOwnerAccounts(){
+    public PageResponse<Account> getOwnerAccounts(int pageNum, int pageSize){
         UserResponse user = getUserFromAuthServiceById(getUserIdCxtHolder());
 
-        return accountRepository.findAllByUserId(user.getId());
+        if (pageNum < 1) {
+            throw new IllegalArgumentException("Page number must be greater than 0.");
+        }
+        if (pageSize < 1) {
+            throw new IllegalArgumentException("Page size must be greater than 0.");
+        }
+
+        Page<Account> paged =accountRepository.findAllByUserId(user.getId(),PageRequest.of(pageNum - 1, pageSize, Sort.by("timeStamp").descending()));
+
+        return new PageResponse<Account>(paged);
 
     }
 
 
 
     public Account getUserAccount(String id){
-        getUserFromAuthServiceById(getUserIdCxtHolder());
 
         return accountRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
@@ -115,18 +122,16 @@ public class AccountService {
     }
 
 
-    public Account updateAccountStatus(String id, String status) {
-        getUserFromAuthServiceById(getUserIdCxtHolder());
+    public Account updateAccountStatus(String id, UpdateStatusRequestDTO updateStatusRequestDTO) {
 
         Account account = accountRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new AccountNotFoundException("Account does not exist"));
 
-        if (account.getAccountStatus() == AccountStatus.valueOf(status.toUpperCase())) {
+        if (account.getAccountStatus() == AccountStatus.valueOf(updateStatusRequestDTO.getAccountStatus().toUpperCase())) {
             return account;
-
         }
 
-        account.setAccountStatus(AccountStatus.valueOf(status.toUpperCase()));
+        account.setAccountStatus(AccountStatus.valueOf(updateStatusRequestDTO.getAccountStatus().toUpperCase()));
         return this.accountRepository.save(account);
     }
 

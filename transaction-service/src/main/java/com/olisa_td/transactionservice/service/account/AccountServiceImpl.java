@@ -2,6 +2,8 @@ package com.olisa_td.transactionservice.service.account;
 
 import com.olisa_td.transactionservice.dto.AccountResponse;
 import com.olisa_td.transactionservice.exception.domain.AccountNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class AccountServiceImpl implements AccountOperations {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${account.service.url}")
     private String accountServiceUrl;

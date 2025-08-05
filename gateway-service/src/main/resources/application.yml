@@ -23,7 +23,7 @@ spring:
         - id: account-service
           uri: http://account-service:4002
           predicates:
-            - Path=/api/v1/account/**
+            - Path=/api/v1/accounts/**
           filters:
             - StripPrefix=3
             - JwtAuth
@@ -31,7 +31,7 @@ spring:
         - id: transaction-service
           uri: http://transaction-service:4003
           predicates:
-            - Path=/api/v1/transaction/**
+            - Path=/api/v1/transactions/**
           filters:
             - StripPrefix=3
             - JwtAuth
