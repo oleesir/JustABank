@@ -1,6 +1,6 @@
 # JustABank 
 
-- This is a Java-based microservices banking system designed to manage core financial operations such as user authentication, account management, and transactions. The system is built using Spring Boot and follows a clean, scalable, and secure microservices architecture.
+- This is a Java-based microservices banking system designed to manage core financial operations such as user authentication, account management,transactions and email notifications. The system is built using Spring Boot and follows a clean, scalable, and secure microservices architecture.
 
 ---
 
@@ -80,7 +80,50 @@ The application is composed of four independent microservices:
 ---
 
 
+## 📦 Prerequisites
+
+Before you start, make sure you have installed:
+
+- [Java 17+](https://www.oracle.com/java/technologies/downloads/)
+- [Maven](https://maven.apache.org/install.html)
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+## Project setup
+
+```bash
+$ git clone https://github.com/oleesir/JustABank.git
+$ cd JustABank
+```
+
+### Build Springboot app
+```
+$ mvn clean install
+```
+
+### Build and start
+```
+$ docker compose up --build
+```
+
+### Stop all containers
+```
+$ docker compose down
+```
 ---
+
+
+### 🛠️ Troubleshooting
+- Port conflicts: Ensure ports 4000-4004, 5001-5003, 9092, and 9094 are not in use.
+
+- Kafka connection issues: Make sure services use kafka:9092 as the bootstrap server (internal Docker network).
+
+- If container already exists, remove with:
+
+```
+$ docker rm -f <container-name>
+```
+
 
 ## 🚦 Microservice Endpoints
 
@@ -417,82 +460,6 @@ Successfully deleted.
 }
 </pre>
 
----
 
-
----
-
-## 🚦 Auth Service Environment Variables
-
-#### JWT_SECRET=
-#### SPRING_DATASOURCE_PASSWORD=
-#### SPRING_DATASOURCE_URL=
-#### SPRING_DATASOURCE_USERNAME=
-#### SPRING_JPA_HIBERNATE_DDL_AUTO=
-#### SPRING_SQL_INIT_MODE=
-
----
-
-
----
-
-## 🚦 Account Service Environment Variables
-
-####  AUTH_SERVICE=
-####  SPRING_DATASOURCE_PASSWORD=
-#### SPRING_DATASOURCE_URL=
-#### SPRING_DATASOURCE_USERNAME=
-#### SPRING_JPA_HIBERNATE_DDL_AUTO=
-#### SPRING_KAFKA_BOOTSTRAP_SERVERS=
-#### SPRING_SQL_INIT_MODE=
-
----
-
-
----
-
-## 🚦 Transaction Service Environment Variables
-
-#### ACCOUNT_SERVICE=
-#### AUTH_SERVICE=
-#### SPRING_DATASOURCE_PASSWORD=
-#### SPRING_DATASOURCE_URL=
-#### SPRING_DATASOURCE_USERNAME=
-#### SPRING_JPA_HIBERNATE_DDL_AUTO=
-#### SPRING_KAFKA_BOOTSTRAP_SERVERS=
-#### SPRING_SQL_INIT_MODE=
-
----
-
-
----
-
-## 🚦 Gateway API Environment Variables
-
-#### AUTH_SERVICE=
----
-
-
----
-
-## 🚦 Kafka Environment Variables
-
-
-#### KAFKA_CFG_ADVERTISED_LISTENERS=
-#### KAFKA_CFG_CONTROLLER_LISTENER_NAMES=
-#### KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=
-#### KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=
-#### KAFKA_CFG_LISTENERS=
-#### KAFKA_CFG_NODE_ID=
-
----
-
-## 🚦 Database Environment Variables
-
-#### POSTGRES_DB=
-#### POSTGRES_PASSWORD=
-#### POSTGRES_USER=
-
----
 
 

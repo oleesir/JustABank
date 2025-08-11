@@ -1,0 +1,157 @@
+services:
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    networks:
+      - oli
+    ports:
+     - "9092:9092"
+     - "9094:9094"
+    environment:
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+
+
+  auth-service:
+    build: ./auth-service
+    image: auth-service:latest
+    container_name: auth-service
+    ports:
+      - "4001:4001"
+    networks:
+      - oli
+    environment:
+       SPRING_DATASOURCE_URL: jdbc:postgresql://auth-service-db:5432/userDb
+       SPRING_DATASOURCE_USERNAME: admin
+       SPRING_DATASOURCE_PASSWORD: pg123
+       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+       JWT_SECRET: <secret>
+    depends_on:
+      - auth-service-db
+
+  auth-service-db:
+    image: postgres:latest
+    container_name: auth-service-db
+    networks:
+      - oli
+    volumes:
+      - auth-service-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: userDb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pg123
+    ports:
+      - "5001:5432"
+
+  account-service:
+    build: ./account-service
+    image: account-service:latest
+    container_name: account-service
+    ports:
+      - "4002:4002"
+    networks:
+      - oli
+    environment:
+      AUTH_SERVICE: http://auth-service:4001
+      SPRING_DATASOURCE_PASSWORD: pg123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://account-service-db:5432/accountDb
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_SQL_INIT_MODE: always
+    depends_on:
+      - account-service-db
+      - kafka
+
+  account-service-db:
+    image: postgres:latest
+    container_name: account-service-db
+    networks:
+      - oli
+    volumes:
+      - account-service-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: accountDb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pg123
+    ports:
+      - "5002:5432"
+
+  transaction-service:
+    build: ./transaction-service
+    image: transaction-service:latest
+    container_name: transaction-service
+    ports:
+      - "4003:4003"
+    networks:
+      - oli
+    environment:
+      ACCOUNT_SERVICE: http://account-service:4002
+      AUTH_SERVICE: http://auth-service:4001
+      SPRING_DATASOURCE_PASSWORD: pg123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://transaction-service-db:5432/transactionDb
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_SQL_INIT_MODE: always
+    depends_on:
+      - transaction-service-db
+      - kafka
+
+  transaction-service-db:
+    image: postgres:latest
+    container_name: transaction-service-db
+    networks:
+      - oli
+    volumes:
+      - transaction-service-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: transactionDb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pg123
+    ports:
+      - "5003:5432"
+
+  email-service:
+    build: ./email-service
+    image: email-service:latest
+    container_name: email-service
+    networks:
+      - oli
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_MAIL_PASSWORD: <password>
+      SPRING_MAIL_USERNAME: <email>
+    ports:
+      - "4004:4004"
+    depends_on:
+      - kafka
+
+  gateway-service:
+    build: ./gateway-service
+    image: gateway-service:latest
+    container_name: gateway-service
+    networks:
+      - oli
+    environment:
+      AUTH_SERVICE: http://auth-service:4001
+    ports:
+      - "4000:4000"
+    depends_on:
+      - auth-service
+      - account-service
+      - transaction-service
+
+networks:
+   oli:
+    driver: bridge
+
+volumes:
+  auth-service-db:
+  account-service-db:
+  transaction-service-db:
